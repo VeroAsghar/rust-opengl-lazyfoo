@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::{str, slice};
 use std::ffi::CString;
 use rust_opengl_lazyfoo::*; 
 
@@ -50,20 +50,17 @@ unsafe extern "C" fn run_main_loop(val: i32) {
 }
 
 fn main() {
-    eprintln!("Hello");
     unsafe { 
         let mut argc: i32 = 0;
         glutInit(&mut argc, std::ptr::null_mut());
-    eprintln!("Hello");
         glutInitContextVersion(2, 1);
-    eprintln!("Hello");
         glutInitDisplayMode(GLUT_DOUBLE);
-    eprintln!("Hello");
         glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    eprintln!("Hello");
         let window_title = CString::new("OpenGL").expect("CString::new failed");
         glutCreateWindow(window_title.as_ptr());
         if let Err(e) = init_gl() {
+            let error_string = str::from_utf8(slice::from_raw_parts(gluErrorString(*e), 1)).unwrap();
+            eprintln!("Error initializing OpenGL! {}", error_string);
             panic!()
         }
 
